@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <link href="./styles.css" rel="stylesheet" type="text/css">
+    <style>
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="app">
+            <h1>Todo List</h1>
+            <div class="input-group">
+                <input type="text" id="todoInput" placeholder="Add a new todo...">
+                <button onclick="addTodo()">Add Todo</button>
+            </div>
+            <div class="todo-list" id="todoList"></div>
+        </div>
+    </div>
+
+    <script>
+        // Load todos from localStorage
+        let todos = JSON.parse(localStorage.getItem('todos')) || [];
+
+        // Render todos
+        function renderTodos() {
+            const todoList = document.getElementById('todoList');
+            todoList.innerHTML = '';
+
+            todos.forEach((todo, index) => {
+                const todoItem = document.createElement('div');
+                todoItem.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+
+                todoItem.innerHTML = `
+                    <input type="checkbox" class="checkbox" 
+                           ${todo.completed ? 'checked' : ''} 
+                           onchange="toggleTodo(${index})">
+                    <span class="todo-text">${todo.text}</span>
+                    <button class="delete-btn" onclick="deleteTodo(${index})">Delete</button>
+                `;
+
+                todoList.appendChild(todoItem);
+            });
+
+            // Save to localStorage
+            localStorage.setItem('todos', JSON.stringify(todos));
+        }
+
+        // Add new todo
+        function addTodo() {
+            const input = document.getElementById('todoInput');
+            const text = input.value.trim();
+
+            if (text) {
+                todos.push({ text, completed: false });
+                input.value = '';
+                renderTodos();
+            }
+        }
+
+        // Toggle todo completion
+        function toggleTodo(index) {
+            todos[index].completed = !todos[index].completed;
+            renderTodos();
+        }
+
+        // Delete todo
+        function deleteTodo(index) {
+            todos.splice(index, 1);
+            renderTodos();
+        }
+
+        // Add todo on Enter key
+        document.getElementById('todoInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addTodo();
+            }
+        });
+
+        // Initial render
+        renderTodos();
+    </script>
+</body>
+</html>
